@@ -70,10 +70,12 @@ public class GroupService {
             throw new GroupNotFoundException("Group not found, Please create group first");
         }
 
-        Optional<Group> checkMember = groupRepository.findByMembersId(optionalMember.get().getId());
-
-        if (checkMember.isPresent()) {
-            throw new MemberAlreadyExistsException("Member already exists in group");
+        if (optionalGroup.get().getMembers() != null) {
+            for (User member : optionalGroup.get().getMembers()) {
+                if (member.getId() == memberId) {
+                    throw new MemberAlreadyExistsException("Member already exists in group");
+                }
+            }
         }
 
         Group group = optionalGroup.get();

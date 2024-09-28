@@ -1,12 +1,15 @@
 package dev.arman.splitwise.services;
 
+import dev.arman.splitwise.exceptions.GroupNotFoundException;
 import dev.arman.splitwise.exceptions.UserAlreadyExistsException;
 import dev.arman.splitwise.exceptions.UserNotFoundException;
+import dev.arman.splitwise.models.Group;
 import dev.arman.splitwise.models.User;
 import dev.arman.splitwise.models.UserStatus;
 import dev.arman.splitwise.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -56,5 +59,21 @@ public class UserService {
         user.setPassword(password);
 
         return userRepository.save(user);
+    }
+
+    public List<Group> viewGroups(long userId) throws UserNotFoundException, GroupNotFoundException {
+        Optional<User> userOptional = userRepository.findById(userId);
+
+        if (userOptional.isEmpty()) {
+            throw new UserNotFoundException("User not found");
+        }
+
+        User user = userOptional.get();
+
+        if (user.getGroups() == null) {
+            throw new GroupNotFoundException("No groups found for user with id: " + userId);
+        }
+
+        return user.getGroups();
     }
 }

@@ -1,14 +1,16 @@
 package dev.arman.splitwise.controller;
 
-import dev.arman.splitwise.dtos.RegisterUserRequestDto;
-import dev.arman.splitwise.dtos.RegisterUserResponseDto;
-import dev.arman.splitwise.dtos.UpdateProfileRequestDto;
-import dev.arman.splitwise.dtos.UpdateProfileResponseDto;
+import dev.arman.splitwise.dtos.*;
+import dev.arman.splitwise.exceptions.GroupNotFoundException;
 import dev.arman.splitwise.exceptions.UserAlreadyExistsException;
 import dev.arman.splitwise.exceptions.UserNotFoundException;
+import dev.arman.splitwise.models.Group;
 import dev.arman.splitwise.models.User;
 import dev.arman.splitwise.services.UserService;
 import org.springframework.stereotype.Controller;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author mdarmanansari
@@ -50,6 +52,28 @@ public class UserController {
             response.setMessage("User profile updated successfully");
 
         } catch (UserNotFoundException userNotFoundException) {
+            response.setStatus("FAILURE");
+            response.setMessage(userNotFoundException.getMessage());
+
+        }
+        return response;
+    }
+
+    public ViewGroupResponseDto viewGroup(ViewGroupRequestDto request) {
+        List<String> groupNames = new ArrayList<>();
+        ViewGroupResponseDto response = new ViewGroupResponseDto();
+
+        try {
+            List<Group> groups = userService.viewGroups(request.getUserId());
+
+            for (Group group : groups) {
+                groupNames.add(group.getName());
+            }
+            response.setGroupNames(groupNames);
+            response.setStatus("SUCCESS");
+            response.setMessage("User group viewed successfully");
+
+        } catch (UserNotFoundException | GroupNotFoundException userNotFoundException) {
             response.setStatus("FAILURE");
             response.setMessage(userNotFoundException.getMessage());
 

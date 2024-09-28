@@ -8,4 +8,5 @@ public interface CommandKeyword {
     String UPDATE_PROFILE = "UpdateProfile";
     String ADD_GROUP = "AddGroup";
     String ADD_MEMBER = "AddMember";
+    String VIEW_GROUP = "Groups";
 }
