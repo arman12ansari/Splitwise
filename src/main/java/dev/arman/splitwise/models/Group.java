@@ -1,6 +1,7 @@
 package dev.arman.splitwise.models;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
@@ -14,13 +15,13 @@ import java.util.List;
 
 @Getter
 @Setter
-@Entity(name = "groups")
+@Entity(name = "splitwise_group")
 public class Group extends BaseModel {
     private String name;
 
     private String description;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<User> members;
 
     @ManyToOne

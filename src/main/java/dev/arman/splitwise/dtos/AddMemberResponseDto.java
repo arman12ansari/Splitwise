@@ -8,8 +8,8 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class AddGroupResponseDto {
-    private Long groupId;
+public class AddMemberResponseDto {
+    private long groupId;
     private String status;
     private String message;
 }

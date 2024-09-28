@@ -1,6 +1,7 @@
 package dev.arman.splitwise.services;
 
 import dev.arman.splitwise.exceptions.GroupAlreadyExistsException;
+import dev.arman.splitwise.exceptions.GroupNotFoundException;
 import dev.arman.splitwise.exceptions.UserNotFoundException;
 import dev.arman.splitwise.models.Group;
 import dev.arman.splitwise.models.User;
@@ -8,6 +9,7 @@ import dev.arman.splitwise.repositories.GroupRepository;
 import dev.arman.splitwise.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -42,6 +44,41 @@ public class GroupService {
         group.setName(groupName);
         group.setDescription(groupDescription);
         group.setCreatedBy(user);
+
+        return groupRepository.save(group);
+    }
+
+    public Group addMember(long groupCreatorId, long groupId, long memberId) throws UserNotFoundException, GroupNotFoundException {
+        Optional<User> optionalGroupCreator = userRepository.findById(groupCreatorId);
+
+        if (optionalGroupCreator.isEmpty()) {
+            throw new UserNotFoundException("User not found, Please register yourself as user");
+        }
+
+        Optional<User> optionalMember = userRepository.findById(memberId);
+
+        if (optionalMember.isEmpty()) {
+            throw new UserNotFoundException("Member not found, Please ask member to register first as user");
+        }
+
+        Optional<Group> optionalGroup = groupRepository.findById(groupId);
+
+        if (optionalGroup.isEmpty()) {
+            throw new GroupNotFoundException("Group not found, Please create group first");
+        }
+
+        Group group = optionalGroup.get();
+
+        if (group.getCreatedBy().getId() != groupCreatorId) {
+            throw new GroupNotFoundException("You are not the creator of this group, Please ask admin to add Member");
+        }
+
+
+        if (group.getMembers() == null) {
+            group.setMembers(List.of(optionalMember.get()));
+        } else {
+            group.getMembers().add(optionalMember.get());
+        }
 
         return groupRepository.save(group);
     }
