@@ -39,14 +39,13 @@ public class ExpenseController {
         return groupExpenseResponseDto;
     }
 
-    public IndividualExpenseResponseDto addSinglePayerIndividualExpense(IndividualExpenseRequestDto requestDto) {
+    public IndividualExpenseResponseDto addSinglePayerIndividualExpenseByEqual(IndividualExpenseRequestDto requestDto) {
         Expense expense;
         IndividualExpenseResponseDto response = new IndividualExpenseResponseDto();
 
         try {
-            expense = expenseService.addSinglePayerIndividualExpense(requestDto.getPaidUserId(),
-                    requestDto.getOwedUserIds(), requestDto.getAmount(), requestDto.getDescription(),
-                    requestDto.getTypeOfOperation());
+            expense = expenseService.addSinglePayerIndividualExpenseByEqual(requestDto.getPaidUserId(),
+                    requestDto.getOwedUserIds(), requestDto.getAmount(), requestDto.getDescription());
 
             response.setExpenseId(expense.getId());
             response.setStatus("SUCCESS");

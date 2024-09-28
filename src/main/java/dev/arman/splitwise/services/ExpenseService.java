@@ -1,6 +1,5 @@
 package dev.arman.splitwise.services;
 
-import dev.arman.splitwise.commands.CommandKeyword;
 import dev.arman.splitwise.exceptions.GroupNotFoundException;
 import dev.arman.splitwise.exceptions.UserNotFoundException;
 import dev.arman.splitwise.models.Expense;
@@ -64,9 +63,8 @@ public class ExpenseService {
         return createdExpense;
     }
 
-    public Expense addSinglePayerIndividualExpense(Long paidUserId, List<Long> owedUserId,
-                                                   int amount, String description,
-                                                   String typeOfOperation) throws UserNotFoundException {
+    public Expense addSinglePayerIndividualExpenseByEqual(Long paidUserId, List<Long> owedUserId,
+                                                          int amount, String description) throws UserNotFoundException {
 
         Optional<User> optionalPaidUser = userRepository.findById(paidUserId);
         if (optionalPaidUser.isEmpty()) {
@@ -84,9 +82,14 @@ public class ExpenseService {
 
         Expense createdExpense = insertIndividualExpense(amount, description, optionalPaidUser.get());
 
-        if (typeOfOperation.equals(CommandKeyword.EQUAL)) {
-            individualExpenseCalculatorByEqual(owedUsers, optionalPaidUser.get(), createdExpense, amount);
+        userExpenseService.paidUserExpense(optionalPaidUser.get(), createdExpense, amount);
+
+        int shareAmount = amount / (owedUsers.size() + 1);
+        for (User owedUser : owedUsers) {
+            userExpenseService.hadToPayUserExpense(owedUser, createdExpense, shareAmount);
         }
+
+        userExpenseService.hadToPayUserExpense(optionalPaidUser.get(), createdExpense, shareAmount);
 
         return createdExpense;
     }
@@ -108,17 +111,5 @@ public class ExpenseService {
         expense.setCreatedBy(createdBy);
         expense.setExpenseType(ExpenseType.EXPENSE);
         return expenseRepository.save(expense);
-    }
-
-    public void individualExpenseCalculatorByEqual(List<User> owedUsers, User paidUser, Expense expense,
-                                                   int amount) {
-        userExpenseService.paidUserExpense(paidUser, expense, amount);
-
-        int shareAmount = amount / (owedUsers.size() + 1);
-        for (User owedUser : owedUsers) {
-            userExpenseService.hadToPayUserExpense(owedUser, expense, shareAmount);
-        }
-
-        userExpenseService.hadToPayUserExpense(paidUser, expense, shareAmount);
     }
 }

@@ -15,5 +15,4 @@ public class IndividualExpenseRequestDto {
     private List<Long> owedUserIds;
     private String description;
     private int amount;
-    private String typeOfOperation;
 }

@@ -56,10 +56,9 @@ public class AddSinglePayerIndividualExpenseByEqualCommand implements Command {
         request.setOwedUserIds(owedUserIds);
         request.setAmount(amount);
         request.setDescription(description.toString().trim());
-        request.setTypeOfOperation(CommandKeyword.EQUAL);
 
         IndividualExpenseResponseDto response =
-                expenseController.addSinglePayerIndividualExpense(request);
+                expenseController.addSinglePayerIndividualExpenseByEqual(request);
 
         System.out.println(response.getStatus());
         System.out.println(response.getMessage());
