@@ -2,6 +2,7 @@ package dev.arman.splitwise.commands;
 
 import dev.arman.splitwise.controller.GroupController;
 import dev.arman.splitwise.dtos.AddGroupRequestDto;
+import dev.arman.splitwise.dtos.AddGroupResponseDto;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -37,6 +38,9 @@ public class AddGroupCommand implements Command {
         addGroupRequestDto.setGroupName(groupName);
         addGroupRequestDto.setGroupDescription(groupDescription);
 
-        groupController.addGroup(addGroupRequestDto);
+        AddGroupResponseDto addGroupResponseDto = groupController.addGroup(addGroupRequestDto);
+
+        System.out.println(addGroupResponseDto.getStatus());
+        System.out.println(addGroupResponseDto.getMessage());
     }
 }

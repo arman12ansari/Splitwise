@@ -2,6 +2,7 @@ package dev.arman.splitwise.commands;
 
 import dev.arman.splitwise.controller.UserController;
 import dev.arman.splitwise.dtos.RegisterUserRequestDto;
+import dev.arman.splitwise.dtos.RegisterUserResponseDto;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -38,6 +39,9 @@ public class RegisterUserCommand implements Command {
         registerUserRequestDto.setPhoneNumber(phoneNumber);
         registerUserRequestDto.setPassword(password);
 
-        userController.registerUser(registerUserRequestDto);
+        RegisterUserResponseDto registerUserResponseDto = userController.registerUser(registerUserRequestDto);
+
+        System.out.println(registerUserResponseDto.getStatus());
+        System.out.println(registerUserResponseDto.getMessage());
     }
 }

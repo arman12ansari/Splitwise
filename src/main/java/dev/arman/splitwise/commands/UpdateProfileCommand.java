@@ -2,6 +2,7 @@ package dev.arman.splitwise.commands;
 
 import dev.arman.splitwise.controller.UserController;
 import dev.arman.splitwise.dtos.UpdateProfileRequestDto;
+import dev.arman.splitwise.dtos.UpdateProfileResponseDto;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -35,6 +36,9 @@ public class UpdateProfileCommand implements Command {
         updateProfileRequestDto.setPhoneNumber(phoneNumber);
         updateProfileRequestDto.setPassword(password);
 
-        userController.updateProfile(updateProfileRequestDto);
+        UpdateProfileResponseDto updateProfileResponseDto = userController.updateProfile(updateProfileRequestDto);
+
+        System.out.println(updateProfileResponseDto.getStatus());
+        System.out.println(updateProfileResponseDto.getMessage());
     }
 }

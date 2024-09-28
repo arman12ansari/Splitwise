@@ -1,10 +1,10 @@
 package dev.arman.splitwise.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 /**
  * @author mdarmanansari
@@ -22,4 +22,7 @@ public class User extends BaseModel {
 
     @Enumerated(EnumType.ORDINAL)
     private UserStatus userStatus;
+
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "members")
+    private List<Group> groups;
 }

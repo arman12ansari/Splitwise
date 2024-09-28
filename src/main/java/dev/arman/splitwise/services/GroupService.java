@@ -2,6 +2,7 @@ package dev.arman.splitwise.services;
 
 import dev.arman.splitwise.exceptions.GroupAlreadyExistsException;
 import dev.arman.splitwise.exceptions.GroupNotFoundException;
+import dev.arman.splitwise.exceptions.MemberAlreadyExistsException;
 import dev.arman.splitwise.exceptions.UserNotFoundException;
 import dev.arman.splitwise.models.Group;
 import dev.arman.splitwise.models.User;
@@ -44,11 +45,13 @@ public class GroupService {
         group.setName(groupName);
         group.setDescription(groupDescription);
         group.setCreatedBy(user);
+        group.setMembers(List.of(user));
 
         return groupRepository.save(group);
     }
 
-    public Group addMember(long groupCreatorId, long groupId, long memberId) throws UserNotFoundException, GroupNotFoundException {
+    public Group addMember(long groupCreatorId, long groupId, long memberId)
+            throws UserNotFoundException, GroupNotFoundException, MemberAlreadyExistsException {
         Optional<User> optionalGroupCreator = userRepository.findById(groupCreatorId);
 
         if (optionalGroupCreator.isEmpty()) {
@@ -65,6 +68,12 @@ public class GroupService {
 
         if (optionalGroup.isEmpty()) {
             throw new GroupNotFoundException("Group not found, Please create group first");
+        }
+
+        Optional<Group> checkMember = groupRepository.findByMembersId(optionalMember.get().getId());
+
+        if (checkMember.isPresent()) {
+            throw new MemberAlreadyExistsException("Member already exists in group");
         }
 
         Group group = optionalGroup.get();

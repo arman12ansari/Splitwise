@@ -6,6 +6,7 @@ import dev.arman.splitwise.dtos.AddMemberRequestDto;
 import dev.arman.splitwise.dtos.AddMemberResponseDto;
 import dev.arman.splitwise.exceptions.GroupAlreadyExistsException;
 import dev.arman.splitwise.exceptions.GroupNotFoundException;
+import dev.arman.splitwise.exceptions.MemberAlreadyExistsException;
 import dev.arman.splitwise.exceptions.UserNotFoundException;
 import dev.arman.splitwise.models.Group;
 import dev.arman.splitwise.services.GroupService;
@@ -48,7 +49,7 @@ public class GroupController {
             response.setGroupId(group.getId());
             response.setStatus("SUCCESS");
             response.setMessage("Member added successfully");
-        } catch (UserNotFoundException | GroupNotFoundException userNotFoundException) {
+        } catch (UserNotFoundException | GroupNotFoundException | MemberAlreadyExistsException userNotFoundException) {
             response.setStatus("FAILURE");
             response.setMessage(userNotFoundException.getMessage());
         }
