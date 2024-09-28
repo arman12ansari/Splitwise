@@ -2,6 +2,8 @@ package dev.arman.splitwise.controller;
 
 import dev.arman.splitwise.dtos.GroupExpenseRequestDto;
 import dev.arman.splitwise.dtos.GroupExpenseResponseDto;
+import dev.arman.splitwise.dtos.IndividualExpenseRequestDto;
+import dev.arman.splitwise.dtos.IndividualExpenseResponseDto;
 import dev.arman.splitwise.models.Expense;
 import dev.arman.splitwise.services.ExpenseService;
 import org.springframework.stereotype.Controller;
@@ -35,5 +37,25 @@ public class ExpenseController {
         }
 
         return groupExpenseResponseDto;
+    }
+
+    public IndividualExpenseResponseDto addSinglePayerIndividualExpense(IndividualExpenseRequestDto requestDto) {
+        Expense expense;
+        IndividualExpenseResponseDto response = new IndividualExpenseResponseDto();
+
+        try {
+            expense = expenseService.addSinglePayerIndividualExpense(requestDto.getPaidUserId(),
+                    requestDto.getOwedUserIds(), requestDto.getAmount(), requestDto.getDescription(),
+                    requestDto.getTypeOfOperation());
+
+            response.setExpenseId(expense.getId());
+            response.setStatus("SUCCESS");
+            response.setMessage("Individual expense added successfully");
+        } catch (Exception e) {
+            response.setStatus("FAILURE");
+            response.setMessage("Failed to add individual expense");
+        }
+
+        return response;
     }
 }

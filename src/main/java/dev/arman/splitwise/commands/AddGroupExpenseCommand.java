@@ -14,11 +14,11 @@ import static dev.arman.splitwise.commands.CommandKeyword.SELF_PAY;
  * @author mdarmanansari
  */
 @Component
-public class AddGroupExpense implements Command {
+public class AddGroupExpenseCommand implements Command {
     //u1 Expense g1 iPay 1000 Equal Desc Wifi Bill
     private final ExpenseController expenseController;
 
-    public AddGroupExpense(ExpenseController expenseController) {
+    public AddGroupExpenseCommand(ExpenseController expenseController) {
         this.expenseController = expenseController;
     }
 

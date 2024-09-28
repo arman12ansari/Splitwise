@@ -11,5 +11,6 @@ public interface CommandKeyword {
     String VIEW_GROUP = "Groups";
     String EXPENSE = "Expense";
     String SELF_PAY = "iPay";
-    String DESC = "DESC";
+    String DESC = "Desc";
+    String EQUAL = "Equal";
 }

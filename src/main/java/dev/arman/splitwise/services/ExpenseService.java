@@ -1,6 +1,6 @@
 package dev.arman.splitwise.services;
 
-
+import dev.arman.splitwise.commands.CommandKeyword;
 import dev.arman.splitwise.exceptions.GroupNotFoundException;
 import dev.arman.splitwise.exceptions.UserNotFoundException;
 import dev.arman.splitwise.models.Expense;
@@ -12,6 +12,7 @@ import dev.arman.splitwise.repositories.GroupRepository;
 import dev.arman.splitwise.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,7 +47,7 @@ public class ExpenseService {
             throw new UserNotFoundException("User not found");
         }
 
-        Expense createdExpense = groupExpenseCalculator(amount, description,
+        Expense createdExpense = insertGroupExpense(amount, description,
                 optionalUser.get(), optionalGroup.get());
 
         userExpenseService.paidUserExpense(optionalUser.get(), createdExpense, amount);
@@ -63,7 +64,34 @@ public class ExpenseService {
         return createdExpense;
     }
 
-    public Expense groupExpenseCalculator(int amount, String description, User createdBy, Group group) {
+    public Expense addSinglePayerIndividualExpense(Long paidUserId, List<Long> owedUserId,
+                                                   int amount, String description,
+                                                   String typeOfOperation) throws UserNotFoundException {
+
+        Optional<User> optionalPaidUser = userRepository.findById(paidUserId);
+        if (optionalPaidUser.isEmpty()) {
+            throw new UserNotFoundException("User not found");
+        }
+
+        List<User> owedUsers = new ArrayList<>();
+        for (Long userId : owedUserId) {
+            Optional<User> optionalOwedUser = userRepository.findById(userId);
+            if (optionalOwedUser.isEmpty()) {
+                throw new UserNotFoundException("User not found");
+            }
+            owedUsers.add(optionalOwedUser.get());
+        }
+
+        Expense createdExpense = insertIndividualExpense(amount, description, optionalPaidUser.get());
+
+        if (typeOfOperation.equals(CommandKeyword.EQUAL)) {
+            individualExpenseCalculatorByEqual(owedUsers, optionalPaidUser.get(), createdExpense, amount);
+        }
+
+        return createdExpense;
+    }
+
+    public Expense insertGroupExpense(int amount, String description, User createdBy, Group group) {
         Expense expense = new Expense();
         expense.setAmount(amount);
         expense.setDescription(description);
@@ -71,5 +99,26 @@ public class ExpenseService {
         expense.setGroups(group);
         expense.setExpenseType(ExpenseType.EXPENSE);
         return expenseRepository.save(expense);
+    }
+
+    public Expense insertIndividualExpense(int amount, String description, User createdBy) {
+        Expense expense = new Expense();
+        expense.setAmount(amount);
+        expense.setDescription(description);
+        expense.setCreatedBy(createdBy);
+        expense.setExpenseType(ExpenseType.EXPENSE);
+        return expenseRepository.save(expense);
+    }
+
+    public void individualExpenseCalculatorByEqual(List<User> owedUsers, User paidUser, Expense expense,
+                                                   int amount) {
+        userExpenseService.paidUserExpense(paidUser, expense, amount);
+
+        int shareAmount = amount / (owedUsers.size() + 1);
+        for (User owedUser : owedUsers) {
+            userExpenseService.hadToPayUserExpense(owedUser, expense, shareAmount);
+        }
+
+        userExpenseService.hadToPayUserExpense(paidUser, expense, shareAmount);
     }
 }
