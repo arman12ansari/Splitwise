@@ -12,9 +12,10 @@ import java.util.List;
 public class CommandRegistry {
     private List<Command> commands;
 
-    public CommandRegistry(RegisterUserCommand registerUserCommand) {
+    public CommandRegistry(RegisterUserCommand registerUserCommand, UpdateProfileCommand updateProfileCommand) {
         commands = new ArrayList<>();
         commands.add(registerUserCommand);
+        commands.add(updateProfileCommand);
     }
 
     public void execute(String input) {
