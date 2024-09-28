@@ -9,4 +9,7 @@ public interface CommandKeyword {
     String ADD_GROUP = "AddGroup";
     String ADD_MEMBER = "AddMember";
     String VIEW_GROUP = "Groups";
+    String EXPENSE = "Expense";
+    String SELF_PAY = "iPay";
+    String DESC = "DESC";
 }

@@ -8,8 +8,8 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class UpdateProfileResponseDto {
-    private Long userId;
+public class GroupExpenseResponseDto {
+    private Long expenseId;
     private String status;
     private String message;
 }
