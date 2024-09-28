@@ -14,4 +14,9 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
 
     @Override
     Optional<Group> findById(Long id);
+
+    Optional<Group> findByName(String name);
+
+    @Override
+    Group save(Group group);
 }
