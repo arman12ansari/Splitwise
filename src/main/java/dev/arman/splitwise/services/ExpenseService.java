@@ -94,6 +94,46 @@ public class ExpenseService {
         return createdExpense;
     }
 
+    public Expense addMultiPayerIndividualExpenseByPercent(Long createdById, List<Long> paidUserId,
+                                                           List<Integer> amountPaid, List<Integer> percent,
+                                                           String description) throws UserNotFoundException {
+
+        List<User> paidUsers = new ArrayList<>();
+        for (Long userId : paidUserId) {
+            Optional<User> optionalPaidUser = userRepository.findById(userId);
+            if (optionalPaidUser.isEmpty()) {
+                throw new UserNotFoundException("User not found");
+            }
+            paidUsers.add(optionalPaidUser.get());
+        }
+
+        Optional<User> optionalCreatedUser = userRepository.findById(createdById);
+        if (optionalCreatedUser.isEmpty()) {
+            throw new UserNotFoundException("User not found");
+        }
+
+        int amount = 0;
+        for (Integer amt : amountPaid) {
+            amount += amt;
+        }
+
+        Expense createdExpense = insertIndividualExpense(amount, description, optionalCreatedUser.get());
+
+        int paidCounter = 0;
+        for (User paidUser : paidUsers) {
+            userExpenseService.paidUserExpense(paidUser, createdExpense, amountPaid.get(paidCounter));
+            paidCounter++;
+        }
+
+        int percentCounter = 0;
+        for (User paidUser : paidUsers) {
+            userExpenseService.hadToPayUserExpense(paidUser, createdExpense, (amount * percent.get(percentCounter)) / 100);
+            percentCounter++;
+        }
+
+        return createdExpense;
+    }
+
     public Expense insertGroupExpense(int amount, String description, User createdBy, Group group) {
         Expense expense = new Expense();
         expense.setAmount(amount);

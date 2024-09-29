@@ -1,9 +1,6 @@
 package dev.arman.splitwise.controller;
 
-import dev.arman.splitwise.dtos.GroupExpenseRequestDto;
-import dev.arman.splitwise.dtos.GroupExpenseResponseDto;
-import dev.arman.splitwise.dtos.IndividualExpenseRequestDto;
-import dev.arman.splitwise.dtos.IndividualExpenseResponseDto;
+import dev.arman.splitwise.dtos.*;
 import dev.arman.splitwise.models.Expense;
 import dev.arman.splitwise.services.ExpenseService;
 import org.springframework.stereotype.Controller;
@@ -53,6 +50,26 @@ public class ExpenseController {
         } catch (Exception e) {
             response.setStatus("FAILURE");
             response.setMessage("Failed to add individual expense");
+        }
+
+        return response;
+    }
+
+    public MultiPayerIndividualResponseDto addMultiPayerIndividualExpenseByPercent(MultiPayerIndividualRequestDto requestDto) {
+        Expense expense;
+        MultiPayerIndividualResponseDto response = new MultiPayerIndividualResponseDto();
+
+        try {
+            expense = expenseService.addMultiPayerIndividualExpenseByPercent(requestDto.getCreateById(),
+                    requestDto.getPaidByUserIds(), requestDto.getAmountPaid(), requestDto.getPercent(),
+                    requestDto.getDescription());
+
+            response.setExpenseId(expense.getId());
+            response.setStatus("SUCCESS");
+            response.setMessage("MultiPayer expense By Percent added successfully");
+        } catch (Exception e) {
+            response.setStatus("FAILURE");
+            response.setMessage("Failed to add MultiPayer expense By Percent expense");
         }
 
         return response;

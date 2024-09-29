@@ -15,7 +15,8 @@ public class CommandRegistry {
     public CommandRegistry(RegisterUserCommand registerUserCommand, UpdateProfileCommand updateProfileCommand,
                            AddGroupCommand addGroupCommand, AddMemberCommand addMemberCommand,
                            ViewGroupCommand viewGroupCommand, AddGroupExpenseCommand addGroupExpenseCommand,
-                           AddSinglePayerIndividualExpenseByEqualCommand addSinglePayerIndividualExpenseByEqualCommand) {
+                           AddSinglePayerIndividualExpenseByEqualCommand addSinglePayerIndividualExpenseByEqualCommand,
+                           AddMultiPayerIndividualExpenseByPercentCommand addMultiPayerIndividualExpenseByPercentCommand) {
         commands = new ArrayList<>();
         commands.add(registerUserCommand);
         commands.add(updateProfileCommand);
@@ -24,6 +25,7 @@ public class CommandRegistry {
         commands.add(viewGroupCommand);
         commands.add(addGroupExpenseCommand);
         commands.add(addSinglePayerIndividualExpenseByEqualCommand);
+        commands.add(addMultiPayerIndividualExpenseByPercentCommand);
     }
 
     public void execute(String input) {

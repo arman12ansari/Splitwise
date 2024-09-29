@@ -13,4 +13,6 @@ public interface CommandKeyword {
     String SELF_PAY = "iPay";
     String DESC = "Desc";
     String EQUAL = "Equal";
+    String MULTI_PAY = "MultiPay";
+    String PERCENT = "Percent";
 }
