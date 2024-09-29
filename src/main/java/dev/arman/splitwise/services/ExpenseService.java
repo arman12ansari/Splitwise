@@ -9,6 +9,7 @@ import dev.arman.splitwise.repositories.UserExpenseRepository;
 import dev.arman.splitwise.repositories.UserRepository;
 import dev.arman.splitwise.services.strategies.settleUpStrategy.SettleUpStrategy;
 import dev.arman.splitwise.services.strategies.settleUpStrategy.Transaction;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class ExpenseService {
 
     public ExpenseService(ExpenseRepository expenseRepository, GroupRepository groupRepository,
                           UserRepository userRepository, UserExpenseService userExpenseService,
-                          SettleUpStrategy settleUpStrategy, UserExpenseRepository userExpenseRepository) {
+                          @Qualifier("heapSettleUpStrategy") SettleUpStrategy settleUpStrategy, UserExpenseRepository userExpenseRepository) {
         this.expenseRepository = expenseRepository;
         this.groupRepository = groupRepository;
         this.userRepository = userRepository;

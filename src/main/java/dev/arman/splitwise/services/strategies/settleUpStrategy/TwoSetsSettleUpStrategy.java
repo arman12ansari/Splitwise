@@ -14,7 +14,7 @@ import java.util.*;
 /**
  * @author mdarmanansari
  */
-@Component
+@Component("twoSetsSettleUpStrategy")
 public class TwoSetsSettleUpStrategy implements SettleUpStrategy {
     private final UserExpenseRepository userExpenseRepository;
 
