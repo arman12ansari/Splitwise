@@ -1,9 +1,14 @@
 package dev.arman.splitwise.controller;
 
 import dev.arman.splitwise.dtos.*;
+import dev.arman.splitwise.exceptions.GroupNotFoundException;
+import dev.arman.splitwise.exceptions.UserNotFoundException;
 import dev.arman.splitwise.models.Expense;
 import dev.arman.splitwise.services.ExpenseService;
+import dev.arman.splitwise.services.strategies.settleUpStrategy.Transaction;
 import org.springframework.stereotype.Controller;
+
+import java.util.List;
 
 /**
  * @author mdarmanansari
@@ -28,9 +33,9 @@ public class ExpenseController {
             groupExpenseResponseDto.setExpenseId(expense.getId());
             groupExpenseResponseDto.setStatus("SUCCESS");
             groupExpenseResponseDto.setMessage("Group expense added successfully");
-        } catch (Exception e) {
+        } catch (GroupNotFoundException | UserNotFoundException groupNotFoundException) {
             groupExpenseResponseDto.setStatus("FAILURE");
-            groupExpenseResponseDto.setMessage("Failed to add group expense");
+            groupExpenseResponseDto.setMessage(groupNotFoundException.getMessage());
         }
 
         return groupExpenseResponseDto;
@@ -47,9 +52,9 @@ public class ExpenseController {
             response.setExpenseId(expense.getId());
             response.setStatus("SUCCESS");
             response.setMessage("Individual expense added successfully");
-        } catch (Exception e) {
+        } catch (UserNotFoundException userNotFoundException) {
             response.setStatus("FAILURE");
-            response.setMessage("Failed to add individual expense");
+            response.setMessage(userNotFoundException.getMessage());
         }
 
         return response;
@@ -67,9 +72,43 @@ public class ExpenseController {
             response.setExpenseId(expense.getId());
             response.setStatus("SUCCESS");
             response.setMessage("MultiPayer expense By Percent added successfully");
-        } catch (Exception e) {
+        } catch (UserNotFoundException userNotFoundException) {
             response.setStatus("FAILURE");
-            response.setMessage("Failed to add MultiPayer expense By Percent expense");
+            response.setMessage(userNotFoundException.getMessage());
+        }
+
+        return response;
+    }
+
+    public SettleUpUserResponseDto settleUpUser(SettleUpUserRequestDto request) {
+        List<Transaction> transactions;
+        SettleUpUserResponseDto response = new SettleUpUserResponseDto();
+
+        try {
+            transactions = expenseService.settleUpUser(request.getUserId());
+            response.setStatus("SUCCESS");
+            response.setMessage("List of Transaction to settle up user fetched successfully");
+            response.setTransactions(transactions);
+        } catch (UserNotFoundException userNotFoundException) {
+            response.setStatus("FAILURE");
+            response.setMessage(userNotFoundException.getMessage());
+        }
+
+        return response;
+    }
+
+    public SettleUpGroupResponseDto settleUpGroup(SettleUpGroupRequestDto request) {
+        List<Transaction> transactions;
+        SettleUpGroupResponseDto response = new SettleUpGroupResponseDto();
+
+        try {
+            transactions = expenseService.settleUpGroup(request.getGroupId());
+            response.setStatus("SUCCESS");
+            response.setMessage("List of Transaction to settle up group fetched successfully");
+            response.setTransactions(transactions);
+        } catch (GroupNotFoundException groupNotFoundException) {
+            response.setStatus("FAILURE");
+            response.setMessage(groupNotFoundException.getMessage());
         }
 
         return response;

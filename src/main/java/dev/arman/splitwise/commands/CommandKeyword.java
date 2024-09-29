@@ -17,4 +17,5 @@ public interface CommandKeyword {
     String PERCENT = "Percent";
     String HISTORY = "History";
     String MY_TOTAL = "MyTotal";
+    String SETTLE_UP = "SettleUp";
 }

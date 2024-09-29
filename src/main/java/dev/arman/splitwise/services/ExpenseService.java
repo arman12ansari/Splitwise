@@ -2,13 +2,13 @@ package dev.arman.splitwise.services;
 
 import dev.arman.splitwise.exceptions.GroupNotFoundException;
 import dev.arman.splitwise.exceptions.UserNotFoundException;
-import dev.arman.splitwise.models.Expense;
-import dev.arman.splitwise.models.ExpenseType;
-import dev.arman.splitwise.models.Group;
-import dev.arman.splitwise.models.User;
+import dev.arman.splitwise.models.*;
 import dev.arman.splitwise.repositories.ExpenseRepository;
 import dev.arman.splitwise.repositories.GroupRepository;
+import dev.arman.splitwise.repositories.UserExpenseRepository;
 import dev.arman.splitwise.repositories.UserRepository;
+import dev.arman.splitwise.services.strategies.settleUpStrategy.SettleUpStrategy;
+import dev.arman.splitwise.services.strategies.settleUpStrategy.Transaction;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -24,12 +24,18 @@ public class ExpenseService {
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
     private final UserExpenseService userExpenseService;
+    private final SettleUpStrategy settleUpStrategy;
+    private final UserExpenseRepository userExpenseRepository;
 
-    public ExpenseService(ExpenseRepository expenseRepository, GroupRepository groupRepository, UserRepository userRepository, UserExpenseService userExpenseService) {
+    public ExpenseService(ExpenseRepository expenseRepository, GroupRepository groupRepository,
+                          UserRepository userRepository, UserExpenseService userExpenseService,
+                          SettleUpStrategy settleUpStrategy, UserExpenseRepository userExpenseRepository) {
         this.expenseRepository = expenseRepository;
         this.groupRepository = groupRepository;
         this.userRepository = userRepository;
         this.userExpenseService = userExpenseService;
+        this.settleUpStrategy = settleUpStrategy;
+        this.userExpenseRepository = userExpenseRepository;
     }
 
     public Expense addGroupExpense(Long groupId, Long paidUserId, String description, int amount)
@@ -132,6 +138,45 @@ public class ExpenseService {
         }
 
         return createdExpense;
+    }
+
+    public List<Transaction> settleUpUser(long UserId) throws UserNotFoundException {
+        Optional<User> optionalUser = userRepository.findById(UserId);
+
+        if (optionalUser.isEmpty()) {
+            throw new UserNotFoundException("User not found");
+        }
+
+        List<UserExpense> userExpenses = userExpenseRepository.findAllByUser(optionalUser.get());
+
+        List<Expense> expenseInvolvingUser = new ArrayList<>();
+        for (UserExpense userExpense : userExpenses) {
+            expenseInvolvingUser.add(userExpense.getExpense());
+        }
+
+        List<Transaction> transactions = settleUpStrategy.settleUp(expenseInvolvingUser);
+
+        List<Transaction> filteredTransactions = new ArrayList<>();
+
+        for (Transaction transaction : transactions) {
+            if (transaction.getFrom().getId() == optionalUser.get().getId() || transaction.getTo().getId() == optionalUser.get().getId()) {
+                filteredTransactions.add(transaction);
+            }
+        }
+
+        return filteredTransactions;
+    }
+
+    public List<Transaction> settleUpGroup(long groupId) throws GroupNotFoundException {
+        Optional<Group> optionalGroup = groupRepository.findById(groupId);
+
+        if (optionalGroup.isEmpty()) {
+            throw new GroupNotFoundException("Group not found");
+        }
+
+        List<Expense> expenses = expenseRepository.findAllByGroups(optionalGroup.get());
+
+        return settleUpStrategy.settleUp(expenses);
     }
 
     public Expense insertGroupExpense(int amount, String description, User createdBy, Group group) {

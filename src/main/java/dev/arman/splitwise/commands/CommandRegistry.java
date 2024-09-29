@@ -17,7 +17,8 @@ public class CommandRegistry {
                            ViewGroupCommand viewGroupCommand, AddGroupExpenseCommand addGroupExpenseCommand,
                            AddSinglePayerIndividualExpenseByEqualCommand addSinglePayerIndividualExpenseByEqualCommand,
                            AddMultiPayerIndividualExpenseByPercentCommand addMultiPayerIndividualExpenseByPercentCommand,
-                           ViewHistoryCommand viewHistoryCommand, ViewTotalCommand viewTotalCommand) {
+                           ViewHistoryCommand viewHistoryCommand, ViewTotalCommand viewTotalCommand,
+                           SettleUpUserCommand settleUpUserCommand, SettleUpGroupCommand settleUpGroupCommand) {
         commands = new ArrayList<>();
         commands.add(registerUserCommand);
         commands.add(updateProfileCommand);
@@ -29,6 +30,8 @@ public class CommandRegistry {
         commands.add(addMultiPayerIndividualExpenseByPercentCommand);
         commands.add(viewHistoryCommand);
         commands.add(viewTotalCommand);
+        commands.add(settleUpUserCommand);
+        commands.add(settleUpGroupCommand);
     }
 
     public void execute(String input) {
