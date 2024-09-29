@@ -16,4 +16,5 @@ public interface CommandKeyword {
     String MULTI_PAY = "MultiPay";
     String PERCENT = "Percent";
     String HISTORY = "History";
+    String MY_TOTAL = "MyTotal";
 }

@@ -36,6 +36,29 @@ public class UserExpenseService {
 
         return userExpenses;
     }
+
+    public int viewTotal(Long userId) throws UserNotFoundException {
+        Optional<User> optionalUser = userRepository.findById(userId);
+
+        if (optionalUser.isEmpty()) {
+            throw new UserNotFoundException("User not found");
+        }
+
+        List<UserExpense> userExpenses = userExpenseRepository.findAllByUser(optionalUser.get());
+
+        int amount = 0;
+
+        for (UserExpense userExpense : userExpenses) {
+            if (userExpense.getUserExpenseType().equals(UserExpenseType.PAID)) {
+                amount += userExpense.getAmount();
+            } else {
+                amount -= userExpense.getAmount();
+            }
+        }
+
+        return amount;
+    }
+
     public void paidUserExpense(User user, Expense expense, int amount) {
         UserExpense userExpense = new UserExpense();
         userExpense.setUser(user);
