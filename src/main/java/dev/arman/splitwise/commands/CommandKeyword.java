@@ -15,4 +15,5 @@ public interface CommandKeyword {
     String EQUAL = "Equal";
     String MULTI_PAY = "MultiPay";
     String PERCENT = "Percent";
+    String HISTORY = "History";
 }
